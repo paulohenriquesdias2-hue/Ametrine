@@ -1,0 +1,41 @@
+name: Compilar Ametrine APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Baixar projeto
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Configurar Android SDK
+        uses: android-actions/setup-android@v4
+      - name: Instalar ferramentas Android
+        run: |
+          yes | sdkmanager --licenses
+          sdkmanager --install "platforms;android-37" "ndk;29.0.14206865" "cmake;3.31.6"
+      - name: Preparar ARMSX2
+        run: bash scripts/setup-armsx2.sh
+      - name: Compilar APK
+        run: ./gradlew --no-daemon :app:assembleDebug
+      - name: Disponibilizar APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ametrine-APK
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error

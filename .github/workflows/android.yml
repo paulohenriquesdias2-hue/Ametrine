@@ -28,7 +28,8 @@ jobs:
       - name: Instalar ferramentas Android
         run: |
           yes | sdkmanager --licenses
-          sdkmanager --install "platforms;android-37" "ndk;29.0.14206865" "cmake;3.31.6"
+          sdkmanager --install "platforms;android-37.0" "ndk;29.0.14206865" "cmake;3.31.6"
+          ln -sfn "$ANDROID_HOME/platforms/android-37.0" "$ANDROID_HOME/platforms/android-37"
       - name: Preparar ARMSX2
         run: bash scripts/setup-armsx2.sh
       - name: Compilar APK
